@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Egglet – cute egg timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fdf9f0;--card:#fff;--ink:#453a56;--mut:#7d7392;--pri:#8f78bb;--soft:#ece4f7;--grn:#7d9c76;--gsoft:#ebf0e0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241f31;--card:#2f2940;--ink:#f2ecff;--mut:#b4a9cc;--pri:#9d86cc;--soft:#3a3350;--gsoft:#2c3a2f}}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}
+.px{font-family:'Pixelify Sans','Courier New',monospace;font-weight:700}
+#app{max-width:430px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg)}
+.scr{flex:1;padding:0 20px 24px;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px}
+.bar h2{margin:0;font-size:24px}
+.ib{background:none;border:0;color:var(--ink);font-size:24px;width:40px;height:40px;cursor:pointer;font-family:'Pixelify Sans',monospace}
+.scene{display:block;width:100%;height:auto;image-rendering:pixelated;shape-rendering:crispEdges}
+.sc{position:relative;margin:0 -20px}
+.tag{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.7);color:#453a56;font-size:13px;padding:4px 8px}
+.name{position:absolute;left:50%;bottom:0;transform:translateX(-50%);background:#fff;color:#453a56;border:2px solid #453a56;padding:1px 22px;font-size:15px}
+.bub{position:absolute;left:50%;top:3%;transform:translateX(-50%);background:#fff;color:#453a56;border:2px solid #453a56;padding:5px 12px;font-size:15px;white-space:nowrap}
+h1{font-size:32px;line-height:1.15;margin:0;text-align:center}
+h3{font-size:24px;margin:18px 0 4px}
+p.sub{color:var(--mut);margin:0 0 12px;font-size:15px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;margin-top:14px;font-size:20px;background:var(--pri);color:#fff;border:3px solid var(--ink);border-radius:4px;box-shadow:0 4px 0 var(--ink);cursor:pointer;font-family:'Pixelify Sans',monospace;font-weight:700}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--bg);color:var(--ink)}
+.lnk{background:none;border:0;color:var(--mut);font:600 16px Inter;padding:14px;cursor:pointer}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--soft);padding:12px;margin-bottom:10px;cursor:pointer;font:inherit}
+.opt.on{background:var(--soft);border:2px solid var(--pri)}
+.opt .yk{width:44px;height:44px;background:#f6edd5;display:grid;place-items:center}
+.opt .yk i{width:18px;height:18px;display:block}
+.opt b{display:block;font-size:17px}.opt small{color:var(--mut);font-size:14px}
+.opt .t{margin-left:auto;font-size:22px}
+.chk{width:26px;height:26px;border:2px solid var(--soft);display:grid;place-items:center;color:#fff;font-size:16px}
+.on .chk{background:var(--pri);border-color:var(--ink)}
+.row{display:flex;align-items:center;gap:14px;width:100%;background:var(--soft);color:var(--ink);border:0;padding:14px;margin-top:4px;text-align:left;font:inherit;cursor:pointer}
+.row b{display:block;font-size:16px}.row small{color:var(--mut);font-size:14px}
+.row .st{margin-left:auto;font-size:18px;color:var(--pri)}
+.sw{margin-left:auto;width:50px;height:30px;background:var(--mut);padding:3px;display:flex;border:2px solid var(--ink)}
+.sw.on{background:var(--pri);justify-content:flex-end}.sw i{width:20px;height:100%;background:#fff;display:block}
+.clock{font-size:96px;text-align:center;line-height:1;margin:6px 0}
+.seg{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;padding:4px;background:var(--soft);border:1px solid var(--soft);margin-top:14px}
+.seg i{height:14px;background:rgba(143,120,187,.2)}.seg i.f{background:var(--pri)}
+.cap{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;margin:6px 0 4px}
+.tip{display:flex;gap:12px;align-items:center;background:var(--gsoft);padding:14px;margin-top:10px}
+.tip b{display:block}.tip small{color:var(--mut);font-size:14px}
+.tab{position:sticky;bottom:0;display:flex;background:var(--bg);border-top:2px solid var(--soft)}
+.tab button{flex:1;background:none;border:0;padding:10px 0 12px;color:var(--mut);font:500 15px Inter;cursor:pointer;display:grid;gap:2px;justify-items:center}
+.tab button.on{color:var(--pri);font-weight:600}.tab span{font-size:22px;line-height:1}
+input.nm{width:100%;font:700 26px 'Pixelify Sans',monospace;padding:14px;border:3px solid var(--pri);background:var(--card);color:var(--ink);border-radius:0;outline:none}
+.cnt{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.til{background:var(--card);color:var(--ink);border:1.5px solid var(--soft);padding:0;text-align:left;cursor:pointer;font:500 15px Inter;position:relative}
+.til svg{display:block;width:100%;height:auto}.til span{display:block;padding:9px 12px}
+.til.on{border:2px solid var(--pri);background:var(--soft);color:var(--pri);font-weight:600}
+.til.on:after{content:"✓";position:absolute;top:6px;right:6px;background:var(--pri);color:#fff;width:24px;height:24px;display:grid;place-items:center}
+.ring{animation:bob .8s steps(1) infinite alternate}
+@keyframes bob{to{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){.ring{animation:none}}
+.ts{display:flex;align-items:flex-start;justify-content:center;gap:6px;background:var(--card);border:3px solid var(--ink);padding:16px 8px;margin-bottom:6px}
+.tc{display:flex;flex-direction:column;align-items:center;gap:4px}
+.tc small{grid-column:1/4;color:var(--mut);font-size:14px}
+.sb{width:44px;height:44px;border:3px solid var(--ink);background:var(--soft);color:var(--ink);font:700 26px 'Pixelify Sans',monospace;cursor:pointer;box-shadow:0 3px 0 var(--ink);padding:0}
+.tin{width:84px;font-size:44px;text-align:center;border:0;background:transparent;color:var(--ink);padding:0;-moz-appearance:textfield;outline:none}
+.tin::-webkit-inner-spin-button{-webkit-appearance:none}
+.colon{font-size:44px;line-height:44px;margin-top:48px}
+.addr{display:flex;gap:10px;margin-top:16px}.addr .btn{width:64px;margin-top:0;font-size:28px;padding:0}.nm.ti{font-size:18px;font-family:Inter,sans-serif;font-weight:500}
+.td{list-style:none;margin:0;padding:0}.td li{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--soft);padding:12px;margin-bottom:10px;font-size:17px;transition:opacity .3s,transform .3s}.td li.gone{opacity:0;transform:translateX(30px)}
+.bx{width:30px;height:30px;flex:none;border:3px solid var(--ink);background:var(--card);color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;padding:0}.bx.on{background:var(--pri)}
+button:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var $=function(s){return document.querySelector(s)};
+var TH={
+meadow:{n:'Clover meadow',sky:'#dfeee3',cl:'#f7fbef',h1:'#b8cca7',h2:'#93ae86',h3:'#7d9c76',g:'#7d9c76',sun:'#fbf0c4'},
+moon:{n:'Moonlit nap',sky:'#dcd5ec',cl:'#efeaf8',h1:'#b1a2cb',h2:'#9585b0',h3:'#7d7399',g:'#7d7399',sun:'#fbf0c4',moon:1},
+peach:{n:'Peach picnic',sky:'#f3dfcc',cl:'#fdf3e6',h1:'#d9c6aa',h2:'#b8aa8a',h3:'#98a083',g:'#98a083',sun:'#fbf0c4',cloth:1},
+rain:{n:'Rainy day',sky:'#cddbe3',cl:'#e6eef2',h1:'#9fbac6',h2:'#86a5b3',h3:'#7898a8',g:'#7898a8',sun:'#f4eec9',rain:1}};
+var LV=[{t:'Soft & dippy',d:'A golden, runny middle',s:360,y:'#e0a35e'},{t:'Just jammy',d:'Soft-set, a little gooey',s:420,y:'#e8b85f'},{t:'Hard & hearty',d:'Firm all the way through',s:600,y:'#e6c777'}];
+var ROWS=["....KKKKKK....","...KCCCCCCK...","..KCWCCCCCCK..","..KCWCCCCCCK..",".KCCCCCCCCCCK.",".KCCCCCCCCCCK.","KCCCCCCCCCCCCK","KCCCCCCCCCCCSK","KCCCCCCCCCCSSK","KCCCCCCCCCCSSK","KCCCCCCCCCCSSK","KCCCCCCCCCSSSK",".KCCCCCCCCSSK.",".KCCCCCCCCCCK.","..KKCCCCCCKK..","....KK..KK...."];
+var COL={K:'#453a56',C:'#fbf3dc',S:'#ecd7a6',W:'#fffdf5'};
+var S={screen:'welcome',hr:0,min:7,sec:0,todos:[],lvl:1,name:'Pip',bg:'meadow',alarm:true,end:0,total:0,left:0,paused:false,stopped:false,snz:false,dName:'',dBg:'',dAlarm:true};
+try{var sv=JSON.parse(localStorage.getItem('egglet')||'{}');['lvl','name','bg','alarm','hr','min','sec','todos'].forEach(function(k){if(sv[k]!==undefined)S[k]=sv[k]});}catch(e){}
+if(!TH[S.bg])S.bg='meadow';
+['hr','min','sec'].forEach(function(k){S[k]=Math.min(60,Math.max(0,parseInt(S[k],10)||0))});if(!(S.hr+S.min+S.sec))S.min=7;
+function save(){try{localStorage.setItem('egglet',JSON.stringify({lvl:S.lvl,name:S.name,bg:S.bg,alarm:S.alarm,hr:S.hr,min:S.min,sec:S.sec,todos:S.todos}))}catch(e){}}
+function R(x,y,w,h,c){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'"/>'}
+function egg(face){
+ var o='';ROWS.forEach(function(r,y){for(var x=0;x<r.length;x++){var c=r[x];if(c!=='.')o+=R(x,y,1,1,COL[c])}});
+ var K=COL.K,P='#e8b4b0';
+ if(face==='sleep'){o+=R(3,9,2,1,K)+R(9,9,2,1,K)+R(5,10,1,1,K)+R(6,11,2,1,K)+R(8,10,1,1,K)}
+ else{o+=R(4,8,1,2,K)+R(9,8,1,2,K);
+  if(face==='happy')o+=R(6,10,2,2,K)+R(6,11,2,1,P);else o+=R(5,10,1,1,K)+R(6,11,2,1,K)+R(8,10,1,1,K)}
+ o+=R(2,10,2,1,P)+R(10,10,2,1,P);
+ return '<g class="ring" transform="translate(17,6)">'+o+'</g>';}
+function scene(k,face,cls){
+ var t=TH[k],o=R(0,-5,48,35,t.sky);
+ if(t.moon)o+=R(35,3,4,5,t.sun)+R(37,3,3,4,t.sky)+R(8,2,1,1,t.sun)+R(24,4,1,1,t.sun)+R(44,10,1,1,t.sun);else o+=R(36,3,4,4,t.sun);
+ o+=R(3,5,6,1,t.cl)+R(4,4,4,1,t.cl)+R(28,9,7,1,t.cl)+R(30,8,4,1,t.cl);
+ o+=R(11,14,12,9,t.h1)+R(33,12,11,11,t.h1)+R(0,17,48,6,t.h1)+R(0,19,14,4,t.h2)+R(27,18,21,5,t.h2);
+ o+=R(3,17,1,6,'#8f8f7a')+R(1,11,6,7,t.h3);
+ o+=R(0,22,48,8,t.g)+R(0,22,48,1,t.h1);
+ if(t.rain)for(var i=0;i<9;i++)o+=R(4+i*5,3+(i*7)%9,1,2,'#7ea3b8');
+ if(t.cloth)o+=R(37,25,6,3,'#f0c9c0')+R(38,25,1,1,'#fbf3dc')+R(40,26,1,1,'#fbf3dc')+R(42,25,1,1,'#fbf3dc');
+ [[5,25],[9,27],[28,25],[44,27]].forEach(function(p){o+=R(p[0],p[1],1,1,'#fbf0c4')});
+ o+=R(15,22,18,1,'rgba(69,58,86,.25)')+egg2(face);
+ return '<svg class="scene '+(cls||'')+'" viewBox="0 -5 48 35" aria-hidden="true">'+o+'</svg>';}
+function fmt(s){s=Math.max(0,s);var h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,p=function(n){return String(n).padStart(2,'0')};return (h?p(h)+':':'')+p(m)+':'+p(c)}
+function T(){return S.hr*3600+S.min*60+S.sec}
+function setT(t){t=Math.min(219660,Math.max(1,Math.round(t)||0));S.hr=Math.floor(t/3600);S.min=Math.floor(t%3600/60);S.sec=t%60;save()}
+function dur(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60,o=[];if(h)o.push(h+' hr');if(m)o.push(m+' min');if(r)o.push(r+' sec');return o.join(' ')||'0 sec'}
+function egg2(face){
+ var W=[4,8,10,12,12,14,14,14,16,16,16,16,16,16,14,12,8],N=W.length,o='',K=COL.K,P='#eaa8a6',G='#7fae6e',H='#fffdf5';
+ function has(x,y){return y>=0&&y<N&&x>=(16-W[y])/2&&x<(16+W[y])/2}
+ for(var y=0;y<N;y++)for(var x=(16-W[y])/2;x<(16+W[y])/2;x++){var ed=!has(x-1,y)||!has(x+1,y)||!has(x,y-1)||!has(x,y+1);o+=R(x,y,1,1,ed?K:(x>=12&&y>=7?COL.S:COL.C))}
+ o+=R(4,3,2,1,H)+R(3,4,1,2,H)+R(4,17,3,1,K)+R(9,17,3,1,K)+R(6,-2,1,1,G)+R(7,-1,2,1,G)+R(9,-2,1,1,G);
+ if(face==='sleep')o+=R(3,10,1,1,K)+R(4,11,2,1,K)+R(6,10,1,1,K)+R(9,10,1,1,K)+R(10,11,2,1,K)+R(12,10,1,1,K);
+ else if(face==='happy')o+=R(3,11,1,1,K)+R(4,10,2,1,K)+R(6,11,1,1,K)+R(9,11,1,1,K)+R(10,10,2,1,K)+R(12,11,1,1,K);
+ else o+=R(4,9,2,3,K)+R(10,9,2,3,K)+R(4,9,1,1,'#fff')+R(10,9,1,1,'#fff');
+ if(face==='happy')o+=R(6,12,4,1,K)+R(7,13,2,1,'#e8908f');else o+=R(6,12,1,1,K)+R(9,12,1,1,K)+R(7,13,2,1,K);
+ o+=R(2,12,2,1,P)+R(12,12,2,1,P);
+ return '<g transform="translate(16,5)"><g class="ring">'+o+'</g></g>';}
+function timeSetter(){function col(k,l,v,mx){return '<div class="tc"><button class="sb" data-a="'+k+'+" aria-label="More '+l+'">+</button><input id="t'+k+'" class="px tin" type="number" inputmode="numeric" min="0" max="'+mx+'" value="'+v+'" aria-label="'+l+'"><button class="sb" data-a="'+k+'-" aria-label="Fewer '+l+'">−</button><small>'+l+'</small></div>'}return '<div class="ts">'+col('h','hours',S.hr,60)+'<span class="px colon">:</span>'+col('m','minutes',S.min,60)+'<span class="px colon">:</span>'+col('s','seconds',S.sec,60)+'</div>'}
+function addTodo(){var i=$('#ti'),t=i?i.value.trim():'';if(!t){i&&i.focus();return}S.todos.push({id:Date.now(),t:t});save();render();var n=$('#ti');n&&n.focus()}
+var AC=null,chimeT=null;
+function ctx(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state!=='running')AC.resume()}catch(e){}}
+function ring(){try{ring0()}catch(e){}}
+function ring0(){if(!AC)return;if(AC.state!=='running')try{AC.resume()}catch(e){}[880,1108.7,1318.5,1760].forEach(function(f,i){var t=AC.currentTime+i*.18,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.3,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.9);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+1)})}
+var AEL=null,WAV={},fbT=null;
+function wav(fn,sec,sr){var n=Math.floor(sec*sr),b=new ArrayBuffer(44+n*2),v=new DataView(b),w=function(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);for(var i=0;i<n;i++)v.setInt16(44+i*2,Math.round(Math.max(-1,Math.min(1,fn(i/sr,i)))*32767),true);return URL.createObjectURL(new Blob([b],{type:'audio/wav'}))}
+function unlock(){try{if(!WAV.c){var f=[880,1108.7,1318.5,1760];WAV.c=wav(function(t){var s=0;f.forEach(function(q,k){var d=t-k*.18;if(d>=0&&d<1.2)s+=Math.sin(6.2832*q*d)*Math.exp(-d*4)*.3});return s},2.2,22050);WAV.k=wav(function(t,i){return (i%2?1:-1)*0.0004},1,8000)}if(!AEL){AEL=new Audio();AEL.setAttribute('playsinline','');AEL.preload='auto'}}catch(e){}}
+function startKeep(){try{unlock();AEL.loop=true;AEL.src=WAV.k;var p=AEL.play();if(p&&p.catch)p.catch(function(){});if(navigator.mediaSession)navigator.mediaSession.metadata=new MediaMetadata({title:'Egglet timer',artist:(S.name||'Pip')+' is on egg duty'})}catch(e){}}
+function stopFb(){if(fbT){clearInterval(fbT);fbT=null}}
+function startChime(){ctx();chimeT=true;var fb=function(){stopFb();ring();fbT=setInterval(ring,2000)};try{unlock();AEL.loop=true;AEL.src=WAV.c;var p=AEL.play();if(p&&p.catch)p.catch(fb)}catch(e){fb()}try{navigator.vibrate&&navigator.vibrate([300,150,300,150,300])}catch(e){}}
+function stopChime(){chimeT=false;stopFb();try{if(AEL)AEL.pause()}catch(e){}}
+function preview(){ctx();try{unlock();AEL.loop=false;AEL.src=WAV.c;var p=AEL.play();if(p&&p.catch)p.catch(ring)}catch(e){ring()}}
+
+function tab(a){return '<nav class="tab"><button data-a="go-timer" class="'+(a==='t'?'on':'')+'"><span>⏱</span>Timer</button><button data-a="go-todo" class="'+(a==='o'?'on':'')+'"><span>☑</span>To-do</button><button data-a="go-egg" class="'+(a==='e'?'on':'')+'"><span>✦</span>My egg</button></nav>'}
+function bar(l,t,r){return '<div class="bar">'+l+'<h2 class="px">'+t+'</h2>'+r+'</div>'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function render(){
+ try{if(S.screen==='run')localStorage.setItem('egglet-run',JSON.stringify({end:S.end,total:S.total,snz:S.snz,paused:S.paused,left:S.left}));else localStorage.removeItem('egglet-run')}catch(e){}
+ var h='',v=S.screen,L={t:'Your egg'},n=esc(S.name||'Pip');
+ if(v==='welcome'){
+  h='<div class="scr" style="padding-top:20px"><div class="px" style="text-align:center;font-size:22px;margin-bottom:12px">✦ EGGLET</div><h1 class="px">A little egg.<br>A lovely day.</h1><p class="sub" style="text-align:center;margin-top:10px">Perfect eggs, one cozy moment at a time.</p><div class="sc">'+scene(S.bg,'normal')+'<div class="bub px">hi, I’m '+n+'! ♥</div></div><h3 class="px" style="text-align:center">Meet your breakfast buddy.</h3><p class="sub" style="text-align:center">Set your perfect time, find a happy little place, and let '+n+' keep an eye on the time.</p><button class="btn" data-a="go-timer">▶ Start</button><p class="sub" style="text-align:center;margin-top:14px">Your egg. Your name. Your little world.</p></div>';
+ }else if(v==='timer'){
+  h='<div class="scr">'+bar('<span style="width:40px"></span>','Let’s get cooking','<button class="ib" data-a="go-egg" aria-label="Customize">⚙</button>')+'<div class="sc">'+scene(S.bg,'normal')+'<div class="tag px">'+TH[S.bg].n+'</div><div class="name px">'+n+'</div></div><h3 class="px">How long should it cook?</h3><p class="sub">Set hours, minutes and seconds all at once, up to 60 in each box.</p>'+timeSetter()+
+  [].map(function(l,i){return '<button class="opt'+(i===S.lvl?' on':'')+'" data-a="pick" data-i="'+i+'"><span class="yk"><i style="background:'+l.y+'"></i></span><span><b>'+l.t+'</b><small>'+l.d+'</small></span><span class="t px">'+fmt(l.s)+'</span><span class="chk">'+(i===S.lvl?'✓':'')+'</span></button>'}).join('')+
+  '<button class="row" data-a="alarm"><span style="font-size:22px">🔊</span><span><b>Alarm sound</b><small>Little chimes · Sound '+(S.alarm?'on':'off')+'</small></span><span class="st px">'+(S.alarm?'ON':'OFF')+'</span></button><button class="btn" id="go" data-a="begin">▶ Start cooking · '+dur(T())+'</button></div>'+tab('t');
+ }else if(v==='run'){
+  h='<div class="scr">'+bar('<button class="ib" data-a="end" aria-label="Back">←</button>','A little egg break','<span style="width:40px"></span>')+'<div class="sc">'+scene(S.bg,'sleep')+'<div class="bub px">no rush, just hush.</div></div><h3 class="px" style="text-align:center">'+n+' is on egg duty</h3><div class="clock px" id="clk" role="timer" style="font-size:'+(S.total>=3600?'64px':'96px')+'">'+fmt(S.left)+'</div><p class="sub" style="text-align:center">'+L.t+' · '+(S.snz?'1 minute snooze':dur(S.total)+' timer')+(S.paused?' · paused':'')+'</p><div class="seg" id="seg"></div><div class="cap"><span id="el"></span><span>Almost egg o’clock</span></div><button class="btn" data-a="pause">'+(S.paused?'▶ Resume timer':'❚❚ Pause timer')+'</button><button class="lnk" data-a="end">End cooking</button><button class="row" data-a="alarm2"><span style="font-size:22px">🔊</span><span><b>Alarm sound</b><small>Little chimes · Sound '+(S.alarm?'on':'off')+'</small></span><span class="st px">'+(S.alarm?'ON':'OFF')+'</span></button><p class="sub" style="text-align:center;margin-top:14px">A little chime will tell you when it’s time.</p></div>';
+ }else if(v==='todo'){
+  h='<div class="scr">'+bar('<span style="width:40px"></span>','My to-do list','<span style="width:40px"></span>')+'<div class="sc">'+scene(S.bg,'normal')+'<div class="bub px">one thing at a time!</div></div><div class="addr"><input id="ti" class="nm ti" maxlength="60" placeholder="Add a little task…" aria-label="New task"><button class="btn add" data-a="add" aria-label="Add task">+</button></div><p class="sub" style="margin-top:14px">'+(S.todos.length?S.todos.length+' to go':'Nothing here yet. Add your first task!')+'</p><ul class="td">'+S.todos.map(function(t){return '<li><button class="bx" data-a="check" data-id="'+t.id+'" aria-label="Mark done"></button><span>'+esc(t.t)+'</span></li>'}).join('')+'</ul></div>'+tab('o');
+ }else if(v==='done'){
+  h='<div class="scr">'+bar('<button class="ib" data-a="again" aria-label="Back">←</button>','Egg-cellent!','<button class="ib" data-a="go-egg" aria-label="Rename egg">✦</button>')+'<div class="sc">'+scene(S.bg,'happy')+'<div class="bub px">ding ding! egg’s ready!</div></div><p class="sub" style="text-align:center;margin:18px 0 0;color:var(--grn);font-weight:600">■ TIMER COMPLETE</p><h1 class="px" style="margin:6px 0">Your happy little egg.</h1><p class="sub" style="text-align:center">'+L.t+'. Just right. Thanks, '+n+'!</p><div class="row" style="cursor:default"><span style="font-size:22px">'+(S.stopped?'🔇':'🔊')+'</span><span><b>'+(S.stopped?'Chimes stopped':(S.alarm?'Chiming now!':'Sound is off'))+'</b><small>Little chimes</small></span><span class="st">'+(chimeT?'♪♫':'')+'</span></div><div class="tip"><span style="font-size:26px">❄</span><span><b>Time for a cool-down</b><small>Pop your egg into cold water to stop cooking.</small></span></div>'+
+  (S.stopped?'':'<button class="btn" data-a="stop">🔇 Stop the chimes</button>')+'<button class="btn alt" data-a="snooze">⏰ Snooze · 1 more minute</button><button class="btn alt" data-a="again">↻ Cook another egg</button></div>';
+ }else{
+  h='<div class="scr">'+bar('<button class="ib" data-a="go-timer" aria-label="Back">←</button>','Your little world','<span class="ib" style="display:grid;place-items:center">♥</span>')+'<h3 class="px" style="margin-top:8px">What’s your egg’s name?</h3><input class="nm" id="nm" maxlength="12" value="'+esc(S.dName)+'" aria-label="Egg name"><div class="cnt"><span>A tiny name for a very good egg.</span><span id="cn">'+S.dName.length+' / 12</span></div><h3 class="px">Pick '+esc(S.dName||'Pip')+'’s happy place</h3><p class="sub">Little pixel worlds for every kind of morning.</p><div class="grid">'+
+  Object.keys(TH).map(function(k){return '<button class="til'+(k===S.dBg?' on':'')+'" data-a="bg" data-k="'+k+'">'+scene(k,k==='moon'?'sleep':'normal')+'<span>'+TH[k].n+'</span></button>'}).join('')+'</div><button class="row" style="margin-top:18px" data-a="dalarm"><span style="font-size:22px">🔊</span><span><b>A happy little alarm</b><small>Little chimes · Tap to preview</small></span><span class="sw'+(S.dAlarm?' on':'')+'"><i></i></span></button><button class="btn" data-a="save">✓ Save my little world</button></div>'+tab('e');
+ }
+ $('#app').innerHTML=h;paint();
+ var nm=$('#nm');if(nm)nm.oninput=function(){S.dName=nm.value;$('#cn').textContent=nm.value.length+' / 12'};
+ var ti=$('#ti');if(ti)ti.onkeydown=function(e){if(e.key==='Enter')addTodo()};
+ function upd(){var g=$('#go');if(g)g.textContent='▶ Start cooking · '+dur(T())}
+ ['h','m','s'].forEach(function(k){var el=$('#t'+k);if(el){var f={h:'hr',m:'min',s:'sec'}[k],rd=function(){S[f]=Math.min(60,Math.max(0,parseInt(el.value,10)||0));save();upd()};el.oninput=rd;el.onchange=function(){rd();el.value=S[f]}}});
+ 
+ 
+}
+function paint(){if(S.screen!=='run')return;var c=$('#clk');if(!c)return;c.textContent=fmt(S.left);var p=S.total?(S.total-S.left)/S.total:0,f=Math.round(p*20),s='';for(var i=0;i<20;i++)s+='<i class="'+(i<f?'f':'')+'"></i>';$('#seg').innerHTML=s;$('#el').textContent=fmt(S.total-S.left).replace(/^0/,'')+' of cozy time';document.title=fmt(S.left)+' · Egglet'}
+setInterval(function(){if(S.screen!=='run'||S.paused)return;S.left=Math.ceil((S.end-Date.now())/1000);if(S.left<=0){S.left=0;S.screen='done';S.stopped=false;document.title='Egg’s ready! · Egglet';try{if(S.alarm)startChime();else stopChime();notify()}catch(e){}render()}else paint()},250);
+function notify(){try{if(window.Notification&&Notification.permission==='granted'&&document.hidden)new Notification('Ding ding! Egg’s ready!',{body:(S.name||'Pip')+' says your timer is done.'})}catch(e){}}
+function keepAwake(){try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(function(){})}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&S.screen==='run'&&!S.paused)keepAwake()});
+function run(sec){S.total=sec;S.left=sec;S.end=Date.now()+sec*1000;S.paused=false;S.screen='run';keepAwake();startKeep();try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission()}catch(e){}}
+document.addEventListener('click',function(e){
+ var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a;ctx();unlock();
+ if(a==='go-timer'){S.screen='timer'}
+ else if(a==='go-egg'){stopChime();S.dName=S.name;S.dBg=S.bg;S.dAlarm=S.alarm;S.screen='egg'}
+ else if(/^[hms][-+]$/.test(a)){var f={h:'hr',m:'min',s:'sec'}[a[0]];S[f]=Math.min(60,Math.max(0,S[f]+(a[1]==='+'?1:-1)));save()}
+ 
+ else if(a==='go-todo'){stopChime();S.screen='todo'}
+ else if(a==='add'){addTodo();return}
+ else if(a==='check'){var id=+b.dataset.id,li=b.closest('li');b.classList.add('on');b.textContent='✓';if(li)li.classList.add('gone');setTimeout(function(){S.todos=S.todos.filter(function(t){return t.id!==id});save();if(S.screen==='todo')render()},350);return}
+ else if(a==='alarm'||a==='alarm2'){S.alarm=!S.alarm;save();if(S.alarm){if(a==='alarm2')ring();else preview()}}
+ else if(a==='begin'){if(T()<1){var gb=$('#go');if(gb)gb.textContent='Set a time first';return}S.snz=false;run(T())}
+ else if(a==='pause'){if(S.paused){S.end=Date.now()+S.left*1000;S.paused=false}else S.paused=true}
+ else if(a==='end'||a==='again'){stopChime();S.screen='timer';document.title='Egglet – cute egg timer'}
+ else if(a==='stop'){stopChime();S.stopped=true}
+ else if(a==='snooze'){stopChime();S.snz=true;run(60)}
+ else if(a==='bg'){S.dBg=b.dataset.k}
+ else if(a==='dalarm'){S.dAlarm=!S.dAlarm;if(S.dAlarm)preview()}
+ else if(a==='save'){S.name=(S.dName||'').trim()||'Pip';S.bg=S.dBg;S.alarm=S.dAlarm;save();S.screen='timer'}
+ render();
+});
+try{var rr=JSON.parse(localStorage.getItem('egglet-run')||'null');if(rr&&rr.total&&(rr.paused||Date.now()-rr.end<3600000)){S.total=rr.total;S.snz=!!rr.snz;S.paused=!!rr.paused;S.end=rr.end;S.left=rr.paused?rr.left:Math.ceil((rr.end-Date.now())/1000);S.screen='run';if(S.left<=0){S.left=0;S.screen='done';S.stopped=false;if(S.alarm)startChime()}}}catch(e){}
+render();
+</script>
+</body>
+</html>
